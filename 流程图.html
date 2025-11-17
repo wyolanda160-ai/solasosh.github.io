@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后服务系统 - 流程图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .flow-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .flow-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .flow-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .flow-node:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .flow-node.start {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .flow-node.pending {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .flow-node.processing {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .flow-node.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .flow-node.rejected {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .flow-node.canceled {
+            background: linear-gradient(135deg, #a8a8a8 0%, #666666 100%);
+        }
+        
+        .flow-node.functional {
+            background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%);
+        }
+        
+        .flow-arrow {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .flow-label {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        
+        .node-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .node-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .branch {
+            margin-left: 50px;
+            border-left: 3px dashed #667eea;
+            padding-left: 30px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← 返回导航页</a>
+        
+        <div class="header">
+            <h1>📊 售后服务系统流程图</h1>
+            <p>可视化展示所有业务流程和页面跳转关系</p>
+        </div>
+        
+        <!-- 主流程1: 仅退款 -->
+        <div class="flow-section">
+            <div class="section-title">流程1: 仅退款（最简单）</div>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-node start" onclick="openPage('order-list.html')">
+                        <div class="node-title">订单列表</div>
+                        <div class="node-desc">查看订单</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node" onclick="openPage('after-sales-apply.html')">
+                        <div class="node-title">售后申请</div>
+                        <div class="node-desc">选择"仅退款"</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node pending" onclick="openPage('after-sales-detail-pending.html')">
+                        <div class="node-title">待处理</div>
+                        <div class="node-desc">等待商家审核</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node success" onclick="openPage('after-sales-detail-success.html')">
+                        <div class="node-title">成功</div>
+                        <div class="node-desc">退款到账</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node success" onclick="openPage('confirm-receipt.html')">
+                        <div class="node-title">确认收货</div>
+                        <div class="node-desc">完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主流程2: 退货退款 -->
+        <div class="flow-section">
+            <div class="section-title">流程2: 退货退款（需要物流）</div>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-node start" onclick="openPage('order-list.html')">
+                        <div class="node-title">订单列表</div>
+                        <div class="node-desc">查看订单</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node" onclick="openPage('after-sales-apply.html')">
+                        <div class="node-title">售后申请</div>
+                        <div class="node-desc">选择"退货退款"</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node pending" onclick="openPage('after-sales-detail-pending.html')">
+                        <div class="node-title">待处理</div>
+                        <div class="node-desc">等待商家审核</div>
+                    </div>
+                </div>
+                <div class="flow-row" style="margin-left: 645px;">
+                    <div class="flow-arrow">↓</div>
+                </div>
+                <div class="flow-row">
+                    <div style="width: 215px;"></div>
+                    <div class="flow-node processing" onclick="openPage('after-sales-detail-processing.html')">
+                        <div class="node-title">处理中</div>
+                        <div class="node-desc">商家同意</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node functional" onclick="openPage('logistics-info.html')">
+                        <div class="node-title">填写物流</div>
+                        <div class="node-desc">填写快递单号</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node functional" onclick="openPage('logistics-tracking.html')">
+                        <div class="node-title">物流跟踪</div>
+                        <div class="node-desc">查看物流</div>
+                    </div>
+                </div>
+                <div class="flow-row" style="margin-left: 1075px;">
+                    <div class="flow-arrow">↓</div>
+                </div>
+                <div class="flow-row">
+                    <div style="width: 860px;"></div>
+                    <div class="flow-node success" onclick="openPage('after-sales-detail-success.html')">
+                        <div class="node-title">成功</div>
+                        <div class="node-desc">退款到账</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node success" onclick="openPage('confirm-receipt.html')">
+                        <div class="node-title">确认收货</div>
+                        <div class="node-desc">完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 异常流程: 申请被拒绝 -->
+        <div class="flow-section">
+            <div class="section-title">异常流程: 申请被拒绝后的处理</div>
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-node pending" onclick="openPage('after-sales-detail-pending.html')">
+                        <div class="node-title">待处理</div>
+                        <div class="node-desc">等待商家审核</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node rejected" onclick="openPage('after-sales-detail-rejected.html')">
+                        <div class="node-title">已拒绝</div>
+                        <div class="node-desc">商家拒绝申请</div>
+                    </div>
+                </div>
+                
+                <div class="branch">
+                    <div style="margin-bottom: 15px; color: #666; font-weight: 600;">分支1: 修改申请</div>
+                    <div class="flow-row">
+                        <div class="flow-node functional" onclick="openPage('modify-after-sales.html')">
+                            <div class="node-title">修改申请</div>
+                            <div class="node-desc">修改原因/凭证</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node pending" onclick="openPage('after-sales-detail-pending.html')">
+                            <div class="node-title">待处理</div>
+                            <div class="node-desc">重新等待审核</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="branch">
+                    <div style="margin-bottom: 15px; color: #666; font-weight: 600;">分支2: 平台介入</div>
+                    <div class="flow-row">
+                        <div class="flow-node functional" onclick="openPage('platform-intervene.html')">
+                            <div class="node-title">平台介入申请</div>
+                            <div class="node-desc">提交介入申请</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-node processing" onclick="openPage('after-sales-detail-intervention.html')">
+                            <div class="node-title">介入中</div>
+                            <div class="node-desc">平台处理中</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 其他流程 -->
+        <div class="flow-section">
+            <div class="section-title">其他流程</div>
+            <div class="flow-diagram">
+                <div style="margin-bottom: 15px; color: #666; font-weight: 600;">用户主动撤销</div>
+                <div class="flow-row">
+                    <div class="flow-node pending" onclick="openPage('after-sales-detail-pending.html')">
+                        <div class="node-title">待处理</div>
+                        <div class="node-desc">点击撤销</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node canceled" onclick="openPage('after-sales-detail-canceled.html')">
+                        <div class="node-title">已取消</div>
+                        <div class="node-desc">申请已撤销</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node start" onclick="openPage('order-list.html')">
+                        <div class="node-title">订单列表</div>
+                        <div class="node-desc">返回列表</div>
+                    </div>
+                </div>
+                
+                <div style="margin: 30px 0 15px; color: #666; font-weight: 600;">取消后重新申请</div>
+                <div class="flow-row">
+                    <div class="flow-node canceled" onclick="openPage('after-sales-detail-canceled.html')">
+                        <div class="node-title">已取消</div>
+                        <div class="node-desc">点击重新申请</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-node" onclick="openPage('after-sales-apply.html')">
+                        <div class="node-title">售后申请</div>
+                        <div class="node-desc">重新填写申请</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图例 -->
+        <div class="flow-section">
+            <div class="section-title">图例说明</div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+                    <span>起点/终点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <span>申请页面</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                    <span>待处理状态</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                    <span>处理中状态</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                    <span>拒绝状态</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #a8a8a8 0%, #666666 100%);"></div>
+                    <span>取消状态</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%);"></div>
+                    <span>功能页面</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px; padding: 15px; background: #fff3e5; border-left: 3px solid #ff6b00; border-radius: 4px;">
+                <strong>💡 提示:</strong> 点击任意流程节点可以直接跳转到对应页面进行测试
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openPage(page) {
+            window.open(page, '_blank');
+        }
+    </script>
+</body>
+</html>

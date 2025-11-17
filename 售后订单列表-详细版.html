@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后订单列表 - C端App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        /* 头部导航 */
+        .header {
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            margin-right: 28px;
+        }
+        
+        /* 状态标签页 */
+        .tabs {
+            background: #fff;
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-item {
+            flex-shrink: 0;
+            padding: 14px 20px;
+            font-size: 15px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .tab-item.active {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+        
+        /* 搜索框 */
+        .search-box {
+            background: #fff;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .search-input-wrapper {
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-icon {
+            color: #999;
+            margin-right: 8px;
+        }
+        
+        .search-input {
+            border: none;
+            background: none;
+            flex: 1;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        /* 售后单卡片 */
+        .order-list {
+            padding: 8px 0 80px;
+        }
+        
+        .order-card {
+            background: #fff;
+            margin: 8px 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .order-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .order-number {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .order-status {
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        
+        .order-status.pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .order-status.processing {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .order-status.success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        .order-status.rejected {
+            background: #ffebee;
+            color: #f44336;
+        }
+        
+        .order-status.cancelled {
+            background: #f5f5f5;
+            color: #999;
+        }
+        
+        .order-status.intervention {
+            background: #f3e5f5;
+            color: #9c27b0;
+        }
+        
+        /* 商品信息 */
+        .product-info {
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-detail {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: auto;
+        }
+        
+        .product-price {
+            font-size: 16px;
+            color: #ff4444;
+            font-weight: 500;
+        }
+        
+        /* 售后类型标签 */
+        .type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+        
+        .type-tag.refund-only {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .type-tag.return-refund {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .type-tag.exchange {
+            background: #f3e5f5;
+            color: #9c27b0;
+        }
+        
+        .type-tag.restock {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        /* 售后信息 */
+        .after-sales-info {
+            padding: 12px 16px;
+            background: #f9f9f9;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* 操作按钮区 */
+        .action-buttons {
+            padding: 12px 16px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-danger {
+            background: #fff;
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        
+        .btn-danger:hover {
+            background: #ffebee;
+        }
+        
+        .btn-warning {
+            background: #fff;
+            color: #ff9800;
+            border: 1px solid #ff9800;
+        }
+        
+        .btn-warning:hover {
+            background: #fff3e0;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 16px;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            background: #fff;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.08);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 4px 0;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #667eea;
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-label {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="back-btn" onclick="history.back()">‹</span>
+        <div class="header-title">售后列表</div>
+    </div>
+    
+    <!-- 状态标签页 -->
+    <div class="tabs">
+        <div class="tab-item active" onclick="switchTab(this, 'all')">全部</div>
+        <div class="tab-item" onclick="switchTab(this, 'processing')">处理中</div>
+        <div class="tab-item" onclick="switchTab(this, 'success')">已完成</div>
+        <div class="tab-item" onclick="switchTab(this, 'rejected')">已拒绝</div>
+        <div class="tab-item" onclick="switchTab(this, 'cancelled')">已取消</div>
+        <div class="tab-item" onclick="switchTab(this, 'intervention')">平台介入</div>
+    </div>
+    
+    <!-- 搜索框 -->
+    <div class="search-box">
+        <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="搜索售后单号或订单号...">
+        </div>
+    </div>
+    
+    <!-- 售后订单列表 -->
+    <div class="order-list" id="orderList">
+        <!-- 1. 待商家处理 -->
+        <div class="order-card" data-status="pending">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501170001</span>
+                <span class="order-status pending">待商家处理</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/667eea/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag refund-only">仅退款</span>
+                    <div class="product-name">高品质无线蓝牙耳机 降噪通话 长续航</div>
+                    <div class="product-spec">颜色: 星空黑; 版本: 标准版</div>
+                    <div class="product-price">￥299.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">申请时间</span>
+                    <span class="info-value">2025-01-17 14:30</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">退款金额</span>
+                    <span class="info-value">￥299.00</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="cancelAfterSales('AS202501170001')">取消售后</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501170001')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 2. 退货退款 - 待填写物流 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501160023</span>
+                <span class="order-status processing">待填写物流</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/764ba2/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag return-refund">退货退款</span>
+                    <div class="product-name">智能手表运动版 心率监测 防水</div>
+                    <div class="product-spec">颜色: 深空灰; 尺寸: 42mm</div>
+                    <div class="product-price">￥599.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">商家已同意</span>
+                    <span class="info-value">2025-01-16 10:20</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">退货地址</span>
+                    <span class="info-value">广东省深圳市...</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="fillLogistics('AS202501160023')">填写物流</button>
+            </div>
+        </div>
+        
+        <!-- 3. 退货退款 - 商家收货中 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501150018</span>
+                <span class="order-status processing">商家收货中</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/4facfe/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag return-refund">退货退款</span>
+                    <div class="product-name">无线充电器 快充版 支持多设备</div>
+                    <div class="product-spec">颜色: 白色; 功率: 15W</div>
+                    <div class="product-price">￥89.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">已发货</span>
+                    <span class="info-value">2025-01-15 16:30</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">快递单号</span>
+                    <span class="info-value">SF1234567890</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="viewLogistics('SF1234567890')">查看物流</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501150018')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 4. COD订单 - 待填写银行卡 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501140012</span>
+                <span class="order-status processing">待填写退款账户</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/43e97b/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag refund-only">仅退款</span>
+                    <div class="product-name">运动鞋透气款 减震舒适 跑步训练</div>
+                    <div class="product-spec">颜色: 黑红; 尺码: 42</div>
+                    <div class="product-price">￥399.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">支付方式</span>
+                    <span class="info-value">货到付款(COD)</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">商家已同意</span>
+                    <span class="info-value">2025-01-14 11:45</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="fillBankCard('AS202501140012')">填写银行卡</button>
+            </div>
+        </div>
+        
+        <!-- 5. 退款处理中 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501130009</span>
+                <span class="order-status processing">退款处理中</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/fa709a/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag return-refund">退货退款</span>
+                    <div class="product-name">手机保护壳透明款 防摔防刮</div>
+                    <div class="product-spec">适配: iPhone 14; 颜色: 透明</div>
+                    <div class="product-price">￥29.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">商家已收货</span>
+                    <span class="info-value">2025-01-13 15:20</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">预计到账</span>
+                    <span class="info-value">3-7个工作日</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="viewRefundProgress('AS202501130009')">查看退款进度</button>
+            </div>
+        </div>
+        
+        <!-- 6. 补寄 - 待商家发货 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501120008</span>
+                <span class="order-status processing">商家将补寄发货</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/30cfd0/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag restock">缺货补寄</span>
+                    <div class="product-name">数据线Type-C快充线 编织款</div>
+                    <div class="product-spec">长度: 1米; 颜色: 黑色</div>
+                    <div class="product-price">补寄配件</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">商家已同意</span>
+                    <span class="info-value">2025-01-12 09:30</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">缺少内容</span>
+                    <span class="info-value">数据线x1</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="viewDetail('AS202501120008')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 7. 补寄 - 运输中 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501110005</span>
+                <span class="order-status processing">补寄运输中</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/a8edea/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag restock">缺货补寄</span>
+                    <div class="product-name">蓝牙音箱便携款 防水音响</div>
+                    <div class="product-spec">颜色: 黑色; 版本: 标准版</div>
+                    <div class="product-price">补寄商品</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">已发货</span>
+                    <span class="info-value">2025-01-11 14:00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">快递单号</span>
+                    <span class="info-value">YT9876543210</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="viewLogistics('YT9876543210')">查看物流</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501110005')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 8. 换货 - 待商家收货 -->
+        <div class="order-card" data-status="processing">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501100003</span>
+                <span class="order-status processing">商家收货中</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/ff9a9e/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag exchange">换货</span>
+                    <div class="product-name">T恤纯棉款 休闲百搭 舒适透气</div>
+                    <div class="product-spec">颜色: 白色; 尺码: L</div>
+                    <div class="product-price">换货: 黑色/L</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">已发货</span>
+                    <span class="info-value">2025-01-10 11:30</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">快递单号</span>
+                    <span class="info-value">ZTO6543210987</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="viewLogistics('ZTO6543210987')">查看物流</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501100003')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 9. 售后成功 - 已退款 -->
+        <div class="order-card" data-status="success">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501090002</span>
+                <span class="order-status success">已退款</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/fecfef/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag refund-only">仅退款</span>
+                    <div class="product-name">鼠标无线款 静音办公 人体工学</div>
+                    <div class="product-spec">颜色: 黑色; 接口: USB</div>
+                    <div class="product-price">￥59.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">退款金额</span>
+                    <span class="info-value">￥59.00</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">完成时间</span>
+                    <span class="info-value">2025-01-09 16:45</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="confirmReceived('AS202501090002')">确认已到账</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501090002')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 10. 售后成功 - 补寄完成 -->
+        <div class="order-card" data-status="success">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501080001</span>
+                <span class="order-status success">补寄完成</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/667eea/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag restock">缺货补寄</span>
+                    <div class="product-name">键盘机械款 RGB背光 青轴</div>
+                    <div class="product-spec">轴体: 青轴; 接口: USB</div>
+                    <div class="product-price">补寄配件</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">签收时间</span>
+                    <span class="info-value">2025-01-08 10:20</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">补寄内容</span>
+                    <span class="info-value">键帽拔键器x1</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="confirmReceived('AS202501080001')">确认已收到</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501080001')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 11. 商家拒绝 -->
+        <div class="order-card" data-status="rejected">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501070006</span>
+                <span class="order-status rejected">商家已拒绝</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/764ba2/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag return-refund">退货退款</span>
+                    <div class="product-name">笔记本电脑包 防水耐磨 多功能</div>
+                    <div class="product-spec">尺寸: 15.6英寸; 颜色: 灰色</div>
+                    <div class="product-price">￥129.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">拒绝时间</span>
+                    <span class="info-value">2025-01-07 14:30</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">拒绝原因</span>
+                    <span class="info-value">已过售后期</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="viewDetail('AS202501070006')">查看详情</button>
+                <button class="btn btn-warning" onclick="modifyApplication('AS202501070006')">修改申请</button>
+                <button class="btn btn-danger" onclick="applyIntervention('AS202501070006')">申请平台介入</button>
+            </div>
+        </div>
+        
+        <!-- 12. 平台介入中 -->
+        <div class="order-card" data-status="intervention">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501060004</span>
+                <span class="order-status intervention">平台介入处理中</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/4facfe/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag return-refund">退货退款</span>
+                    <div class="product-name">智能手环运动款 心率血氧 睡眠监测</div>
+                    <div class="product-spec">颜色: 黑色; 尺寸: 标准</div>
+                    <div class="product-price">￥199.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">介入时间</span>
+                    <span class="info-value">2025-01-06 09:15</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">处理进度</span>
+                    <span class="info-value">平台审核中</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="viewMessages('AS202501060004')">查看留言</button>
+                <button class="btn btn-primary" onclick="viewDetail('AS202501060004')">查看详情</button>
+            </div>
+        </div>
+        
+        <!-- 13. 用户主动取消 -->
+        <div class="order-card" data-status="cancelled">
+            <div class="order-header">
+                <span class="order-number">售后单号：AS202501050007</span>
+                <span class="order-status cancelled">已取消</span>
+            </div>
+            <div class="product-info">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/200/43e97b/ffffff?text=商品" alt="商品">
+                </div>
+                <div class="product-detail">
+                    <span class="type-tag exchange">换货</span>
+                    <div class="product-name">帽子棒球帽 防晒遮阳 透气舒适</div>
+                    <div class="product-spec">颜色: 黑色; 尺码: 均码</div>
+                    <div class="product-price">￥39.00</div>
+                </div>
+            </div>
+            <div class="after-sales-info">
+                <div class="info-row">
+                    <span class="info-label">取消时间</span>
+                    <span class="info-value">2025-01-05 18:20</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">取消原因</span>
+                    <span class="info-value">用户主动取消</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="viewDetail('AS202501050007')">查看详情</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="showToast('首页')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">首页</div>
+        </div>
+        <div class="nav-item" onclick="showToast('订单')">
+            <div class="nav-icon">📋</div>
+            <div class="nav-label">订单</div>
+        </div>
+        <div class="nav-item active">
+            <div class="nav-icon">🛡️</div>
+            <div class="nav-label">售后</div>
+        </div>
+        <div class="nav-item" onclick="showToast('我的')">
+            <div class="nav-icon">👤</div>
+            <div class="nav-label">我的</div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换标签
+        function switchTab(element, status) {
+            // 更新标签样式
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // 筛选订单
+            const cards = document.querySelectorAll('.order-card');
+            cards.forEach(card => {
+                if (status === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const cardStatus = card.getAttribute('data-status');
+                    card.style.display = cardStatus === status ? 'block' : 'none';
+                }
+            });
+            
+            showToast('已切换至：' + element.textContent);
+        }
+        
+        // 取消售后
+        function cancelAfterSales(id) {
+            if (confirm('确定要取消售后申请吗？')) {
+                showToast('售后申请已取消');
+            }
+        }
+        
+        // 填写物流
+        function fillLogistics(id) {
+            showToast('跳转至填写物流信息页面');
+        }
+        
+        // 查看物流
+        function viewLogistics(trackingNumber) {
+            showToast('查看物流：' + trackingNumber);
+        }
+        
+        // 填写银行卡
+        function fillBankCard(id) {
+            showToast('跳转至填写银行卡信息页面');
+        }
+        
+        // 查看退款进度
+        function viewRefundProgress(id) {
+            showToast('查看退款进度');
+        }
+        
+        // 确认收到/到账
+        function confirmReceived(id) {
+            if (confirm('确认已收到/到账？')) {
+                showToast('确认成功');
+            }
+        }
+        
+        // 修改申请
+        function modifyApplication(id) {
+            showToast('跳转至修改售后申请页面');
+        }
+        
+        // 申请平台介入
+        function applyIntervention(id) {
+            if (confirm('确定要申请平台介入吗？')) {
+                showToast('跳转至平台介入申请页面');
+            }
+        }
+        
+        // 查看留言
+        function viewMessages(id) {
+            showToast('查看协商留言记录');
+        }
+        
+        // 查看详情
+        function viewDetail(id) {
+            showToast('查看售后详情：' + id);
+        }
+        
+        // 提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 9999;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 搜索功能
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.order-card');
+            
+            cards.forEach(card => {
+                const orderNumber = card.querySelector('.order-number').textContent.toLowerCase();
+                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                
+                if (orderNumber.includes(keyword) || productName.includes(keyword)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
