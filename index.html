@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI 数据分析系统 - 原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* 页面容器 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* BI列表页面 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        .btn-default {
+            background: white;
+            color: #333;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-default:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        /* 搜索和筛选 */
+        .filter-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        select {
+            padding: 10px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* BI卡片列表 */
+        .bi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .bi-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .bi-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .bi-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .bi-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+
+        .bi-card-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .status-draft {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .bi-card-desc {
+            color: #8c8c8c;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .bi-card-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #8c8c8c;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .bi-card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 创建页面 */
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #ff4d4f;
+            margin-left: 4px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-top: 6px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 24px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 24px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 已选数据源标签 */
+        .selected-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 6px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .tag-close {
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .tag-close:hover {
+            opacity: 1;
+        }
+
+        .empty-hint {
+            color: #bfbfbf;
+            font-size: 13px;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8c8c8c;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        /* 报表详情页面 */
+        .detail-header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .detail-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 8px;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 24px;
+            color: #8c8c8c;
+            font-size: 14px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .detail-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-desc {
+            color: #595959;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        /* 数据表格 */
+        .data-table-container {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table-toolbar-left {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .table-search {
+            width: 260px;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            background: #fafafa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #262626;
+            border-bottom: 2px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        .data-table th:hover {
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #595959;
+        }
+
+        .data-table tr:hover {
+            background: #fafafa;
+        }
+
+        .sort-icon {
+            margin-left: 4px;
+            color: #bfbfbf;
+            font-size: 12px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .pagination-info {
+            color: #8c8c8c;
+            font-size: 13px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+
+        /* 配置信息卡片 */
+        .config-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .config-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .config-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            color: #8c8c8c;
+            font-size: 13px;
+        }
+
+        .config-value {
+            color: #262626;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .badge-info {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-brand">📊 BI 数据分析系统</div>
+        <div class="navbar-user">
+            <span>管理员</span>
+            <div class="avatar">A</div>
+        </div>
+    </nav>
+
+    <!-- BI列表页面 -->
+    <div id="listPage" class="page active">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">BI 报表管理</h1>
+                <button class="btn btn-primary" onclick="showCreatePage()">
+                    ✨ 创建BI报表
+                </button>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="filter-bar">
+                <input type="text" class="search-input" placeholder="🔍 搜索报表名称、描述...">
+                <select>
+                    <option>全部状态</option>
+                    <option>已发布</option>
+                    <option>草稿</option>
+                </select>
+                <select>
+                    <option>全部类型</option>
+                    <option>销售分析</option>
+                    <option>财务报表</option>
+                    <option>运营数据</option>
+                    <option>用户分析</option>
+                </select>
+                <button class="btn btn-default">重置</button>
+            </div>
+
+            <!-- BI卡片列表 -->
+            <div class="bi-grid">
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">销售业绩月度分析</div>
+                        </div>
+                        <span class="bi-card-status status-active">已发布</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        展示各区域、产品线的月度销售数据对比，包含同比、环比增长分析
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 销售分析
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 1,234 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-10
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">财务收支报表</div>
+                        </div>
+                        <span class="bi-card-status status-active">已发布</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        汇总企业收入、支出、利润等核心财务指标，支持按时间段筛选
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 财务报表
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 856 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-08
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">用户行为分析看板</div>
+                        </div>
+                        <span class="bi-card-status status-draft">草稿</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        分析用户访问路径、停留时长、转化漏斗等关键行为数据
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 用户分析
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 342 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-12
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">库存周转率分析</div>
+                        </div>
+                        <span class="bi-card-status status-active">已发布</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        监控各品类产品的库存情况、周转率、滞销预警等运营数据
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 运营数据
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 567 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-05
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">客户满意度调查</div>
+                        </div>
+                        <span class="bi-card-status status-active">已发布</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        收集并可视化展示客户反馈数据、满意度评分、NPS指数等
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 用户分析
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 923 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-03
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bi-card">
+                    <div class="bi-card-header">
+                        <div>
+                            <div class="bi-card-title">营销活动效果追踪</div>
+                        </div>
+                        <span class="bi-card-status status-draft">草稿</span>
+                    </div>
+                    <div class="bi-card-desc">
+                        跟踪各渠道营销活动的ROI、转化率、成本分析等关键指标
+                    </div>
+                    <div class="bi-card-meta">
+                        <div class="bi-card-meta-item">
+                            📁 销售分析
+                        </div>
+                        <div class="bi-card-meta-item">
+                            👁️ 189 次查看
+                        </div>
+                        <div class="bi-card-meta-item">
+                            🕐 2024-11-13
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建BI报表页面 -->
+    <div id="createPage" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">创建BI报表</h1>
+                <button class="btn btn-default" onclick="showListPage()">
+                    ← 返回列表
+                </button>
+            </div>
+
+            <div class="form-card">
+                <form>
+                    <!-- 基础信息 -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">基础信息</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                报表名称<span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" placeholder="请输入报表名称，例如：销售业绩月度分析">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">报表描述</label>
+                            <textarea class="form-input" placeholder="请简要描述该报表的用途和包含的主要数据..."></textarea>
+                            <div class="form-hint">建议详细说明报表的业务场景和用途</div>
+                        </div>
+                    </div>
+
+                    <!-- 数据配置 -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">数据配置</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                SQL 查询语句<span class="required">*</span>
+                            </label>
+                            <textarea class="form-input" style="min-height: 150px;" placeholder="请输入 SQL 查询语句，例如：&#10;&#10;SELECT order_id, customer_name, product_name, amount, order_date &#10;FROM sales_data &#10;WHERE order_date >= '2024-01-01'&#10;ORDER BY order_date DESC&#10;&#10;支持多表查询、JOIN、子查询等标准 SQL 语法"></textarea>
+                            <div class="form-hint">编写 SQL 语句来查询和处理数据，支持标准 SQL 语法及多表关联查询</div>
+                        </div>
+                    </div>
+
+                    <!-- 可视化配置 -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">可视化配置</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                展示形式<span class="required">*</span>
+                            </label>
+                            <div class="table-type-card">
+                                <div class="type-icon">📋</div>
+                                <div class="type-info">
+                                    <div class="type-title">数据表格</div>
+                                    <div class="type-desc">以表格形式展示数据，支持排序、筛选、分页等功能</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">表格配置</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="sort" checked>
+                                    <span>支持排序</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="filter" checked>
+                                    <span>支持筛选</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="pagination" checked>
+                                    <span>支持分页</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="export">
+                                    <span>支持导出</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="search">
+                                    <span>支持搜索</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">每页显示条数</label>
+                            <select class="form-input">
+                                <option>10条/页</option>
+                                <option selected>20条/页</option>
+                                <option>50条/页</option>
+                                <option>100条/页</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 权限设置 -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">权限设置</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">可见范围</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="visible" value="public">
+                                    <span>全员：所有后台人员</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="visible" value="role" checked>
+                                    <span>角色可见</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="visible" value="private">
+                                    <span>仅自己</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">发布状态</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="status" value="draft" checked>
+                                    <span>保存为草稿</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="status" value="published">
+                                    <span>立即发布</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-default" onclick="showListPage()">取消</button>
+                        <button type="button" class="btn btn-default">保存草稿</button>
+                        <button type="submit" class="btn btn-primary">创建并发布</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表详情页面 -->
+    <div id="detailPage" class="page">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">报表详情</h1>
+                <button class="btn btn-default" onclick="showListPage()">
+                    ← 返回列表
+                </button>
+            </div>
+
+            <!-- 报表基本信息 -->
+            <div class="detail-header">
+                <div class="detail-title-row">
+                    <div>
+                        <h2 class="detail-title">销售业绩月度分析</h2>
+                        <p class="detail-desc">展示各区域、产品线的月度销售数据对比，包含同比、环比增长分析</p>
+                    </div>
+                    <div class="detail-actions">
+                        <button class="btn btn-default btn-icon" onclick="alert('🔄 数据已刷新')">
+                            🔄 刷新数据
+                        </button>
+                        <button class="btn btn-default btn-icon" onclick="alert('📥 导出功能')">
+                            📥 导出
+                        </button>
+                        <button class="btn btn-primary btn-icon" onclick="showEditMode()">
+                            ✏️ 编辑
+                        </button>
+                    </div>
+                </div>
+                <div class="detail-meta">
+                    <div class="detail-meta-item">
+                        <span>📅 创建时间：</span>
+                        <span>2024-11-10 14:30</span>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span>🔄 最后更新：</span>
+                        <span>2024-11-14 09:15</span>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span>👁️ 查看次数：</span>
+                        <span>1,234 次</span>
+                    </div>
+                    <div class="detail-meta-item">
+                        <span>📊 状态：</span>
+                        <span class="badge badge-success">已发布</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-toolbar-left">
+                        <input type="text" class="table-search" placeholder="🔍 搜索表格数据...">
+                        <select class="form-input" style="width: 150px;">
+                            <option>所有区域</option>
+                            <option>华东区</option>
+                            <option>华南区</option>
+                            <option>华北区</option>
+                            <option>华中区</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select class="form-input" style="width: 120px;">
+                            <option>20条/页</option>
+                            <option>50条/页</option>
+                            <option>100条/页</option>
+                        </select>
+                    </div>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th onclick="alert('排序功能')">  订单ID <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')">  订单编号 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')">  客户姓名 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')">  产品名称 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')" style="text-align: right;">金额 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')" style="text-align: right;">数量 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')">  下单时间 <span class="sort-icon">↕</span></th>
+                            <th onclick="alert('排序功能')">  订单状态 <span class="sort-icon">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10001</td>
+                            <td>SO-2024-001</td>
+                            <td>张三</td>
+                            <td>智能手机 X1</td>
+                            <td style="text-align: right;">￥6,999.00</td>
+                            <td style="text-align: right;">2</td>
+                            <td>2024-11-01 10:23</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10002</td>
+                            <td>SO-2024-002</td>
+                            <td>李四</td>
+                            <td>笔记本电脑 Pro</td>
+                            <td style="text-align: right;">￥8,999.00</td>
+                            <td style="text-align: right;">1</td>
+                            <td>2024-11-02 14:56</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10003</td>
+                            <td>SO-2024-003</td>
+                            <td>王五</td>
+                            <td>无线耳机</td>
+                            <td style="text-align: right;">￥399.00</td>
+                            <td style="text-align: right;">3</td>
+                            <td>2024-11-03 09:12</td>
+                            <td><span class="badge badge-info">处理中</span></td>
+                        </tr>
+                        <tr>
+                            <td>10004</td>
+                            <td>SO-2024-004</td>
+                            <td>赵六</td>
+                            <td>智能手表</td>
+                            <td style="text-align: right;">￥2,299.00</td>
+                            <td style="text-align: right;">1</td>
+                            <td>2024-11-04 16:45</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10005</td>
+                            <td>SO-2024-005</td>
+                            <td>孙七</td>
+                            <td>平板电脑 Air</td>
+                            <td style="text-align: right;">￥4,999.00</td>
+                            <td style="text-align: right;">1</td>
+                            <td>2024-11-05 11:30</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10006</td>
+                            <td>SO-2024-006</td>
+                            <td>周八</td>
+                            <td>智能音箱</td>
+                            <td style="text-align: right;">￥899.00</td>
+                            <td style="text-align: right;">2</td>
+                            <td>2024-11-06 13:20</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10007</td>
+                            <td>SO-2024-007</td>
+                            <td>吴九</td>
+                            <td>游戏手柄</td>
+                            <td style="text-align: right;">￥599.00</td>
+                            <td style="text-align: right;">4</td>
+                            <td>2024-11-07 15:08</td>
+                            <td><span class="badge badge-info">处理中</span></td>
+                        </tr>
+                        <tr>
+                            <td>10008</td>
+                            <td>SO-2024-008</td>
+                            <td>郑十</td>
+                            <td>机械键盘</td>
+                            <td style="text-align: right;">￥799.00</td>
+                            <td style="text-align: right;">1</td>
+                            <td>2024-11-08 10:55</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10009</td>
+                            <td>SO-2024-009</td>
+                            <td>陈十一</td>
+                            <td>显示器 4K</td>
+                            <td style="text-align: right;">￥3,299.00</td>
+                            <td style="text-align: right;">1</td>
+                            <td>2024-11-09 14:22</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                        <tr>
+                            <td>10010</td>
+                            <td>SO-2024-010</td>
+                            <td>黄十二</td>
+                            <td>移动电源</td>
+                            <td style="text-align: right;">￥299.00</td>
+                            <td style="text-align: right;">5</td>
+                            <td>2024-11-10 09:40</td>
+                            <td><span class="badge badge-success">已完成</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <div class="pagination-info">显示 1-10 条，共 156 条数据</div>
+                    <div class="pagination-controls">
+                        <button class="pagination-btn" disabled>上一页</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">4</button>
+                        <button class="pagination-btn">5</button>
+                        <span style="color: #8c8c8c;">...</span>
+                        <button class="pagination-btn">16</button>
+                        <button class="pagination-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 配置信息 -->
+            <div class="config-cards">
+                <div class="config-card">
+                    <h3 class="config-card-title">🗄️ 数据配置</h3>
+                    <div class="config-item">
+                        <span class="config-label">SQL 语句</span>
+                        <span class="config-value">已配置</span>
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <h3 class="config-card-title">📋 表格配置</h3>
+                    <div class="config-item">
+                        <span class="config-label">支持排序</span>
+                        <span class="config-value">✅ 开启</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">支持筛选</span>
+                        <span class="config-value">✅ 开启</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">支持分页</span>
+                        <span class="config-value">✅ 开启</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">支持导出</span>
+                        <span class="config-value">✅ 开启</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">每页显示</span>
+                        <span class="config-value">20 条</span>
+                    </div>
+                </div>
+
+                <div class="config-card">
+                    <h3 class="config-card-title">🔒 权限设置</h3>
+                    <div class="config-item">
+                        <span class="config-label">可见范围</span>
+                        <span class="config-value">角色可见</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">发布状态</span>
+                        <span class="config-value">已发布</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">创建人</span>
+                        <span class="config-value">管理员</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面切换
+        function showListPage() {
+            document.getElementById('listPage').classList.add('active');
+            document.getElementById('createPage').classList.remove('active');
+            document.getElementById('detailPage').classList.remove('active');
+        }
+
+        function showCreatePage() {
+            document.getElementById('listPage').classList.remove('active');
+            document.getElementById('createPage').classList.add('active');
+            document.getElementById('detailPage').classList.remove('active');
+        }
+
+        function showDetailPage() {
+            document.getElementById('listPage').classList.remove('active');
+            document.getElementById('createPage').classList.remove('active');
+            document.getElementById('detailPage').classList.add('active');
+        }
+
+        function showEditMode() {
+            alert('✏️ 编辑模式\n\n这是一个原型演示，实际项目中会进入报表编辑页面。');
+        }
+
+        // 表单提交
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert(`✅ 报表创建成功！\n\n这是一个原型演示，实际项目中会保存数据并跳转到报表详情页。`);
+            showListPage();
+        });
+
+        // 卡片点击
+        document.querySelectorAll('.bi-card').forEach(card => {
+            card.addEventListener('click', function() {
+                showDetailPage();
+            });
+        });
+    </script>
+</body>
+</html>
