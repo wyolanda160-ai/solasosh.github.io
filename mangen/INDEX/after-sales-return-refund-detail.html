@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>售后详情 - 退货退款</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header-back {
+            position: absolute;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-back::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-left: 2px solid #333;
+            border-top: 2px solid #333;
+            transform: rotate(-45deg);
+        }
+        
+        .content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+        
+        /* 处理中状态 - 蓝色 */
+        .status-section {
+            border-radius: 0;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+        }
+        
+        .status-section.processing {
+            background-color: #e6f7ff;
+        }
+        
+        .status-section.processing .status-title,
+        .status-section.processing .status-desc {
+            color: #1890ff;
+        }
+        
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .timeline {
+            padding: 0 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 20px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            margin-right: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-item:not(.active) .timeline-dot {
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .info-card {
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 15px 20px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #fafafa;
+        }
+        
+        .info-content {
+            padding: 15px 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            text-align: right;
+            flex: 1;
+            text-align: right;
+            margin-left: 15px;
+        }
+        
+        .product-card {
+            display: flex;
+            padding: 15px 20px;
+            background-color: #fff;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            color: #ff6b00;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .product-quantity {
+            color: #999;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #1890ff;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #096dd9;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-default:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .highlight {
+            color: #1890ff;
+            font-weight: 600;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .logistics-info {
+            background-color: #f0f8ff;
+            border: 1px dashed #1890ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 20px;
+        }
+        
+        .logistics-title {
+            font-weight: 600;
+            color: #1890ff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logistics-title i {
+            margin-right: 8px;
+        }
+        
+        .logistics-content {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .logistics-btn {
+            display: inline-block;
+            background-color: #1890ff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-back"></div>
+        <div class="header-title">售后详情</div>
+    </div>
+    
+    <div class="container">
+        <div class="content">
+            <!-- 状态显示 - 处理中（蓝色） -->
+            <div class="status-section processing">
+                <div class="status-title">待退货</div>
+                <div class="status-desc">商家已同意您的退货退款申请，请在 <span class="highlight">5天内</span> 寄回商品并填写物流信息</div>
+            </div>
+            
+            <!-- 进度时间轴 -->
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">已提交售后申请</div>
+                        <div class="timeline-time">2023-10-27 14:30:25</div>
+                        <div class="timeline-description">您已成功提交退货退款申请</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">商家已同意退货退款</div>
+                        <div class="timeline-time">2023-10-28 09:15:30</div>
+                        <div class="timeline-description">商家已同意您的退货退款申请，请尽快寄回商品</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">请退货并填写物流信息</div>
+                        <div class="timeline-time"></div>
+                        <div class="timeline-description">请将商品寄回指定地址，并填写物流单号</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">商家收货验收</div>
+                        <div class="timeline-time"></div>
+                        <div class="timeline-description">商家收到退货商品后将进行验收</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">退款完成</div>
+                        <div class="timeline-time"></div>
+                        <div class="timeline-description">您的退款已完成，请注意查收</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退货物流信息 -->
+            <div class="logistics-info">
+                <div class="logistics-title">
+                    <i>📦</i> 退货地址信息
+                </div>
+                <div class="logistics-content">
+                    收件人：优品百货旗舰店售后<br>
+                    联系电话：400-123-4567<br>
+                    地址：北京市朝阳区XX街道XX大厦15楼售后服务中心<br>
+                    邮编：100000
+                </div>
+                <div class="logistics-btn" id="copyAddressBtn">复制地址</div>
+            </div>
+            
+            <!-- 商品信息 -->
+            <div class="product-card">
+                <img src="https://picsum.photos/id/101/200/200" alt="商品图片" class="product-image">
+                <div class="product-details">
+                    <div>
+                        <div class="product-title">高级蓝牙耳机 主动降噪 长续航 无线充电</div>
+                        <div class="product-spec">颜色: 黑色 | 版本: 标准版</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="product-price">¥299.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 售后信息 -->
+            <div class="info-card">
+                <div class="info-title">售后信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">售后单号</div>
+                        <div class="info-value">AS2023102700002</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">售后类型</div>
+                        <div class="info-value">退货退款</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请原因</div>
+                        <div class="info-value">商品质量问题</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">补充说明</div>
+                        <div class="info-value">耳机右耳有杂音，影响正常使用</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请金额</div>
+                        <div class="info-value">¥299.00</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请时间</div>
+                        <div class="info-value">2023-10-27 14:30:25</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付方式</div>
+                        <div class="info-value">在线支付</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div class="info-card">
+                <div class="info-title">订单信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">订单编号</div>
+                        <div class="info-value">2023102600001</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">下单时间</div>
+                        <div class="info-value">2023-10-26 10:15:30</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付时间</div>
+                        <div class="info-value">2023-10-26 10:16:45</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">收货地址</div>
+                        <div class="info-value">北京市朝阳区XX街道XX小区X号楼X单元XXX室</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-20"></div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-default" id="viewLogisticsBtn">查看物流</button>
+            <button class="btn btn-primary" id="fillLogisticsBtn">填写物流信息</button>
+        </div>
+    </div>
+    
+    <script>
+        // 返回按钮点击事件
+        document.querySelector('.header-back').addEventListener('click', function() {
+            window.history.back();
+        });
+        
+        // 复制地址按钮点击事件
+        document.getElementById('copyAddressBtn').addEventListener('click', function() {
+            const addressText = "收件人：优品百货旗舰店售后\n联系电话：400-123-4567\n地址：北京市朝阳区XX街道XX大厦15楼售后服务中心\n邮编：100000";
+            // 实际应用中这里应该是复制到剪贴板的功能
+            alert('退货地址已复制到剪贴板');
+        });
+        
+        // 查看物流按钮点击事件
+        document.getElementById('viewLogisticsBtn').addEventListener('click', function() {
+            // 实际应用中这里应该跳转到物流详情页面
+            alert('跳转到物流详情页面');
+        });
+        
+        // 填写物流信息按钮点击事件
+        document.getElementById('fillLogisticsBtn').addEventListener('click', function() {
+            // 实际应用中这里应该弹出填写物流信息的表单
+            alert('弹出填写物流信息表单');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>售后详情 - 仅退款完成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: #f5f5f5;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .header-back {
+            position: absolute;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-back::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-left: 2px solid #333;
+            border-top: 2px solid #333;
+            transform: rotate(-45deg);
+        }
+        
+        .content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+        
+        /* 成功状态 - 绿色 */
+        .status-section {
+            border-radius: 0;
+            padding: 25px 20px;
+            margin-bottom: 15px;
+        }
+        
+        .status-section.success {
+            background-color: #f6ffed;
+        }
+        
+        .status-section.success .status-title,
+        .status-section.success .status-desc {
+            color: #52c41a;
+        }
+        
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .status-desc {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .timeline {
+            padding: 0 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 20px;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #52c41a;
+            margin-right: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-item:not(.active) .timeline-dot {
+            background-color: #e0e0e0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+        }
+        
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .info-card {
+            background-color: #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 15px 20px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+            background-color: #fafafa;
+        }
+        
+        .info-content {
+            padding: 15px 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            color: #333;
+            text-align: right;
+            flex: 1;
+            text-align: right;
+            margin-left: 15px;
+        }
+        
+        .product-card {
+            display: flex;
+            padding: 15px 20px;
+            background-color: #fff;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-spec {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            color: #ff6b00;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .product-quantity {
+            color: #999;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            height: 40px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: #52c41a;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-default {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-default:hover {
+            border-color: #52c41a;
+            color: #52c41a;
+        }
+        
+        .highlight {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        
+        .mt-20 {
+            margin-top: 20px;
+        }
+        
+        .refund-info {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 20px;
+        }
+        
+        .refund-title {
+            font-weight: 600;
+            color: #52c41a;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .refund-title i {
+            margin-right: 8px;
+        }
+        
+        .refund-content {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-back"></div>
+        <div class="header-title">售后详情</div>
+    </div>
+    
+    <div class="container">
+        <div class="content">
+            <!-- 状态显示 - 成功（绿色） -->
+            <div class="status-section success">
+                <div class="status-title">售后成功</div>
+                <div class="status-desc">您的退款申请已处理完成，退款金额 <span class="highlight">¥199.00</span> 已原路退回</div>
+            </div>
+            
+            <!-- 进度时间轴 -->
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">已提交售后申请</div>
+                        <div class="timeline-time">2023-10-27 14:30:25</div>
+                        <div class="timeline-description">您已成功提交仅退款申请</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">商家已同意退款</div>
+                        <div class="timeline-time">2023-10-28 09:15:30</div>
+                        <div class="timeline-description">商家已同意您的退款申请</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">退款处理中</div>
+                        <div class="timeline-time">2023-10-28 09:30:45</div>
+                        <div class="timeline-description">系统正在处理您的退款</div>
+                    </div>
+                </div>
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">退款已完成</div>
+                        <div class="timeline-time">2023-10-28 10:15:20</div>
+                        <div class="timeline-description">退款已原路退回至您的支付账户</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 退款信息 -->
+            <div class="refund-info">
+                <div class="refund-title">
+                    <i>💰</i> 退款信息
+                </div>
+                <div class="refund-content">
+                    退款金额：¥199.00<br>
+                    退款方式：原路退回（微信支付）<br>
+                    到账时间：1-3个工作日内<br>
+                    如有疑问请联系客服：400-123-4567
+                </div>
+            </div>
+            
+            <!-- 商品信息 -->
+            <div class="product-card">
+                <img src="https://picsum.photos/id/102/200/200" alt="商品图片" class="product-image">
+                <div class="product-details">
+                    <div>
+                        <div class="product-title">纯棉短袖T恤 透气舒适 夏季必备</div>
+                        <div class="product-spec">颜色: 白色 | 尺码: L</div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="product-price">¥199.00</div>
+                        <div class="product-quantity">x1</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 售后信息 -->
+            <div class="info-card">
+                <div class="info-title">售后信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">售后单号</div>
+                        <div class="info-value">AS2023102700003</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">售后类型</div>
+                        <div class="info-value">仅退款</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请原因</div>
+                        <div class="info-value">商品与描述不符</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">补充说明</div>
+                        <div class="info-value">实物颜色与图片差距较大</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请金额</div>
+                        <div class="info-value">¥199.00</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">申请时间</div>
+                        <div class="info-value">2023-10-27 14:30:25</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付方式</div>
+                        <div class="info-value">在线支付</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div class="info-card">
+                <div class="info-title">订单信息</div>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-label">订单编号</div>
+                        <div class="info-value">2023102600002</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">下单时间</div>
+                        <div class="info-value">2023-10-26 10:15:30</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">支付时间</div>
+                        <div class="info-value">2023-10-26 10:16:45</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">收货地址</div>
+                        <div class="info-value">北京市朝阳区XX街道XX小区X号楼X单元XXX室</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-20"></div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="action-buttons">
+            <button class="btn btn-default" id="againBtn">再次购买</button>
+            <button class="btn btn-primary" id="completeBtn">完成</button>
+        </div>
+    </div>
+    
+    <script>
+        // 返回按钮点击事件
+        document.querySelector('.header-back').addEventListener('click', function() {
+            window.history.back();
+        });
+        
+        // 再次购买按钮点击事件
+        document.getElementById('againBtn').addEventListener('click', function() {
+            // 实际应用中这里应该跳转到商品详情页面
+            alert('跳转到商品详情页面');
+        });
+        
+        // 完成按钮点击事件
+        document.getElementById('completeBtn').addEventListener('click', function() {
+            // 实际应用中这里应该返回售后订单列表
+            alert('返回售后订单列表');
+        });
+    </script>
+</body>
+</html>

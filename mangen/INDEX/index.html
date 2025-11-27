@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后服务系统 - 导航索引</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .page-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .page-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        .page-card.status-pending {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .page-card.status-processing {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .page-card.status-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .page-card.status-rejected {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .page-card.status-canceled {
+            background: linear-gradient(135deg, #a8a8a8 0%, #666666 100%);
+        }
+        
+        .page-card.functional {
+            background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%);
+        }
+        
+        .page-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.8;
+        }
+        
+        .tips {
+            background: rgba(255,255,255,0.1);
+            border-left: 3px solid white;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: white;
+            border-radius: 4px;
+        }
+        
+        .tips-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .tips-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 售后服务系统导航</h1>
+            <p>点击任意页面卡片即可预览 | 已实现完整页面跳转串联</p>
+        </div>
+        
+        <!-- 核心流程页面 -->
+        <div class="section">
+            <div class="section-title">📋 核心流程页面</div>
+            <div class="page-grid">
+                <a href="order-list.html" class="page-card">
+                    <div class="page-name">订单列表</div>
+                    <div class="page-desc">查看所有订单，申请售后服务</div>
+                    <div class="status-badge">流程起点</div>
+                </a>
+                
+                <a href="售后订单列表-详细版.html" class="page-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="page-name">售后订单列表</div>
+                    <div class="page-desc">查看所有售后记录，管理售后申请</div>
+                    <div class="status-badge">13个典型场景</div>
+                </a>
+                
+                <a href="after-sales-apply.html?orderId=OD202306100001&orderStatus=received&availableTypes=refund-only,return-refund,exchange,restock&isCod=false" class="page-card functional">
+                    <div class="page-name">售后申请</div>
+                    <div class="page-desc">选择售后类型，填写申请信息</div>
+                    <div class="status-badge">核心页面</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 退货退款售后详情页 -->
+        <div class="section">
+            <div class="section-title">📦 退货退款售后详情页</div>
+            <div class="page-grid">
+                <a href="after-sales-detail-pending.html?afterSalesId=AS2023102700001" class="page-card status-pending">
+                    <div class="page-name">待处理</div>
+                    <div class="page-desc">等待商家审核处理</div>
+                    <div class="status-badge">可撤销申请</div>
+                </a>
+                
+                <a href="after-sales-return-refund-detail.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商户同意，待寄回）</div>
+                    <div class="page-desc">商家已同意，等待用户寄回商品</div>
+                    <div class="status-badge">待寄回</div>
+                </a>
+                
+                <a href="after-sales-return-refund-shipping-in-transit.html" class="page-card status-processing">
+                    <div class="page-name">处理中（用户寄出，运输中）</div>
+                    <div class="page-desc">用户寄出商品，正在运输中</div>
+                    <div class="status-badge">运输中</div>
+                </a>
+                
+                <a href="after-sales-return-refund-quality-check.html" class="page-card status-processing">
+                    <div class="page-name">处理中（用户寄出，商家质检中）</div>
+                    <div class="page-desc">商家正在对退回商品进行质检</div>
+                    <div class="status-badge">质检中</div>
+                </a>
+                
+                <a href="after-sales-return-refund-waiting-refund.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商家同意，等待退款）</div>
+                    <div class="page-desc">质检通过，等待退款处理</div>
+                    <div class="status-badge">等待退款</div>
+                </a>
+                
+                <a href="after-sales-return-refund-quality-fail.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商家质检不通过。协商处理部分退款）</div>
+                    <div class="page-desc">商家质检不通过，协商处理部分退款</div>
+                    <div class="status-badge">协商处理</div>
+                </a>
+                
+                <a href="after-sales-detail-success.html?afterSalesId=AS2023102700001" class="page-card status-success">
+                    <div class="page-name">已完成（退款完成）</div>
+                    <div class="page-desc">售后成功，退款已到账</div>
+                    <div class="status-badge">退款完成</div>
+                </a>
+                
+                <a href="after-sales-return-refund-success.html" class="page-card status-success">
+                    <div class="page-name">已完成（详情）</div>
+                    <div class="page-desc">退货退款完成详情页</div>
+                    <div class="status-badge">已完成</div>
+                </a>
+                
+                <a href="after-sales-detail-rejected.html?afterSalesId=AS2023102700001" class="page-card status-rejected">
+                    <div class="page-name">已拒绝</div>
+                    <div class="page-desc">商家拒绝申请</div>
+                    <div class="status-badge">可修改/平台介入</div>
+                </a>
+                
+                <a href="after-sales-detail-canceled.html?afterSalesId=AS2023102700001&orderId=OD202306100001" class="page-card status-canceled">
+                    <div class="page-name">已取消</div>
+                    <div class="page-desc">用户主动撤销申请</div>
+                    <div class="status-badge">可重新申请</div>
+                </a>
+                
+                <a href="after-sales-detail-intervention.html?afterSalesId=AS2023102700001" class="page-card status-processing">
+                    <div class="page-name">平台介入中</div>
+                    <div class="page-desc">平台正在处理纠纷</div>
+                    <div class="status-badge">可补充证据</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 仅退款售后详情页 -->
+        <div class="section">
+            <div class="section-title">💰 仅退款售后详情页</div>
+            <div class="page-grid">
+                <a href="after-sales-detail-pending.html?afterSalesId=AS2023102700001" class="page-card status-pending">
+                    <div class="page-name">待处理</div>
+                    <div class="page-desc">等待商家审核处理</div>
+                    <div class="status-badge">可撤销申请</div>
+                </a>
+                
+                <a href="after-sales-refund-only-processing.html" class="page-card status-processing">
+                    <div class="page-name">处理中</div>
+                    <div class="page-desc">仅退款处理详情页</div>
+                    <div class="status-badge">处理中</div>
+                </a>
+                
+                <a href="after-sales-refund-only-partial.html" class="page-card status-processing">
+                    <div class="page-name">协商部分退款</div>
+                    <div class="page-desc">商户协商部分退款详情页</div>
+                    <div class="status-badge">协商处理</div>
+                </a>
+                
+                <a href="after-sales-refund-only-success.html" class="page-card status-success">
+                    <div class="page-name">已完成</div>
+                    <div class="page-desc">仅退款完成详情页</div>
+                    <div class="status-badge">已完成</div>
+                </a>
+                
+                <a href="after-sales-detail-rejected.html?afterSalesId=AS2023102700001" class="page-card status-rejected">
+                    <div class="page-name">已拒绝</div>
+                    <div class="page-desc">商家拒绝申请</div>
+                    <div class="status-badge">可修改/平台介入</div>
+                </a>
+                
+                <a href="after-sales-detail-canceled.html?afterSalesId=AS2023102700001&orderId=OD202306100001" class="page-card status-canceled">
+                    <div class="page-name">已取消</div>
+                    <div class="page-desc">用户主动撤销申请</div>
+                    <div class="status-badge">可重新申请</div>
+                </a>
+                
+                <a href="after-sales-detail-intervention.html?afterSalesId=AS2023102700001" class="page-card status-processing">
+                    <div class="page-name">平台介入中</div>
+                    <div class="page-desc">平台正在处理纠纷</div>
+                    <div class="status-badge">可补充证据</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 换货售后详情页 -->
+        <div class="section">
+            <div class="section-title">🔄 换货售后详情页</div>
+            <div class="page-grid">
+                <a href="after-sales-detail-pending.html?afterSalesId=AS2023102700001" class="page-card status-pending">
+                    <div class="page-name">待处理</div>
+                    <div class="page-desc">等待商家审核处理</div>
+                    <div class="status-badge">可撤销申请</div>
+                </a>
+                
+                <a href="after-sales-exchange-detail.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商户同意，待寄回）</div>
+                    <div class="page-desc">商家已同意，等待用户寄回商品</div>
+                    <div class="status-badge">待寄回</div>
+                </a>
+                
+                <a href="after-sales-exchange-shipping-in-transit.html" class="page-card status-processing">
+                    <div class="page-name">处理中（用户寄出，运输中）</div>
+                    <div class="page-desc">用户寄出商品，正在运输中</div>
+                    <div class="status-badge">运输中</div>
+                </a>
+                
+                <a href="after-sales-exchange-quality-check.html" class="page-card status-processing">
+                    <div class="page-name">处理中（用户寄出，商家质检中）</div>
+                    <div class="page-desc">商家正在对退回商品进行质检</div>
+                    <div class="status-badge">质检中</div>
+                </a>
+                
+                <a href="after-sales-exchange-arrange-shipping.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商家同意，安排发货）</div>
+                    <div class="page-desc">质检通过，商家安排发货</div>
+                    <div class="status-badge">安排发货</div>
+                </a>
+                
+                <a href="after-sales-exchange-shipping-out.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商家发货，运输中）</div>
+                    <div class="page-desc">商家已发货，商品运输中</div>
+                    <div class="status-badge">发货运输中</div>
+                </a>
+                
+                <a href="after-sales-exchange-quality-fail.html" class="page-card status-processing">
+                    <div class="page-name">处理中（商家质检不通过。协商处理部分退款）</div>
+                    <div class="page-desc">质检不通过，协商部分退款</div>
+                    <div class="status-badge">协商处理</div>
+                </a>
+                
+                <a href="after-sales-exchange-refund-success.html" class="page-card status-success">
+                    <div class="page-name">已完成（协商退款完成）</div>
+                    <div class="page-desc">协商退款已完成</div>
+                    <div class="status-badge">退款完成</div>
+                </a>
+                
+                <a href="after-sales-exchange-success.html" class="page-card status-success">
+                    <div class="page-name">已完成（商家发货用户签收详情）</div>
+                    <div class="page-desc">换货完成，用户已签收</div>
+                    <div class="status-badge">用户签收</div>
+                </a>
+                
+                <a href="after-sales-detail-rejected.html?afterSalesId=AS2023102700001" class="page-card status-rejected">
+                    <div class="page-name">已拒绝</div>
+                    <div class="page-desc">商家拒绝申请</div>
+                    <div class="status-badge">可修改/平台介入</div>
+                </a>
+                
+                <a href="after-sales-detail-canceled.html?afterSalesId=AS2023102700001&orderId=OD202306100001" class="page-card status-canceled">
+                    <div class="page-name">已取消</div>
+                    <div class="page-desc">用户主动撤销申请</div>
+                    <div class="status-badge">可重新申请</div>
+                </a>
+                
+                <a href="after-sales-detail-intervention.html?afterSalesId=AS2023102700001" class="page-card status-processing">
+                    <div class="page-name">平台介入中</div>
+                    <div class="page-desc">平台正在处理纠纷</div>
+                    <div class="status-badge">可补充证据</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 补寄售后详情页 -->
+        <div class="section">
+            <div class="section-title">📬 补寄售后详情页</div>
+            <div class="page-grid">
+                <a href="after-sales-detail-pending.html?afterSalesId=AS2023102700001" class="page-card status-pending">
+                    <div class="page-name">待处理</div>
+                    <div class="page-desc">等待商家审核处理</div>
+                    <div class="status-badge">可撤销申请</div>
+                </a>
+                
+                <a href="after-sales-resend-detail.html" class="page-card status-processing">
+                    <div class="page-name">处理中</div>
+                    <div class="page-desc">补寄处理详情页</div>
+                    <div class="status-badge">处理中</div>
+                </a>
+                
+                <a href="after-sales-resend-success.html" class="page-card status-success">
+                    <div class="page-name">已完成</div>
+                    <div class="page-desc">补寄完成详情页</div>
+                    <div class="status-badge">已完成</div>
+                </a>
+                
+                <a href="after-sales-detail-rejected.html?afterSalesId=AS2023102700001" class="page-card status-rejected">
+                    <div class="page-name">已拒绝</div>
+                    <div class="page-desc">商家拒绝申请</div>
+                    <div class="status-badge">可修改/平台介入</div>
+                </a>
+                
+                <a href="after-sales-detail-canceled.html?afterSalesId=AS2023102700001&orderId=OD202306100001" class="page-card status-canceled">
+                    <div class="page-name">已取消</div>
+                    <div class="page-desc">用户主动撤销申请</div>
+                    <div class="status-badge">可重新申请</div>
+                </a>
+                
+                <a href="after-sales-detail-intervention.html?afterSalesId=AS2023102700001" class="page-card status-processing">
+                    <div class="page-name">平台介入中</div>
+                    <div class="page-desc">平台正在处理纠纷</div>
+                    <div class="status-badge">可补充证据</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 功能页面 -->
+        <div class="section">
+            <div class="section-title">🔧 功能页面</div>
+            <div class="page-grid">
+                <a href="logistics-info.html?afterSalesId=AS2023102700002&type=return-refund" class="page-card functional">
+                    <div class="page-name">填写物流信息</div>
+                    <div class="page-desc">填写退货快递单号</div>
+                    <div class="status-badge">退货/换货必填</div>
+                </a>
+                
+                <a href="logistics-tracking.html?afterSalesId=AS2023102700002&trackingNumber=SF1234567890123&expressCompany=顺丰速运" class="page-card functional">
+                    <div class="page-name">物流跟踪</div>
+                    <div class="page-desc">查看退货物流详情</div>
+                    <div class="status-badge">实时更新</div>
+                </a>
+                
+                <a href="modify-after-sales.html?afterSalesId=AS2023102700001" class="page-card functional">
+                    <div class="page-name">修改申请</div>
+                    <div class="page-desc">修改被拒绝的售后申请</div>
+                    <div class="status-badge">重新提交</div>
+                </a>
+                
+                <a href="platform-intervene.html?afterSalesId=AS2023102700001" class="page-card functional">
+                    <div class="page-name">平台介入</div>
+                    <div class="page-desc">申请平台介入处理纠纷</div>
+                    <div class="status-badge">上传凭证</div>
+                </a>
+                
+                <a href="confirm-receipt.html?afterSalesId=AS2023102700001" class="page-card functional">
+                    <div class="page-name">确认收货</div>
+                    <div class="page-desc">确认收到退款</div>
+                    <div class="status-badge">完成售后</div>
+                </a>
+                
+                <a href="bank-card-info.html" class="page-card functional">
+                    <div class="page-name">银行卡信息</div>
+                    <div class="page-desc">填写退款银行卡（COD订单）</div>
+                    <div class="status-badge">COD专用</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 流程视觉化 -->
+        <div class="section">
+            <div class="section-title">📊 流程可视化</div>
+            <div class="page-grid">
+                <a href="流程图.html" class="page-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="page-name">📊 业务流程图</div>
+                    <div class="page-desc">可视化展示所有业务流程和跳转关系</div>
+                    <div class="status-badge">点击节点可直达页面</div>
+                </a>
+            </div>
+        </div>
+        
+
+        <div class="footer">
+            <p>💖 售后服务系统原型 v1.0</p>
+            <p>所有页面间的跳转已实现串联，支持完整业务流程测试</p>
+            <p style="margin-top: 10px; font-size: 12px;">最后更新: 2025-11-17</p>
+        </div>
+    </div>
+</body>
+</html>
